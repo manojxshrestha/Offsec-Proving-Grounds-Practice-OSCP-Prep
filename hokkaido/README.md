@@ -257,6 +257,7 @@ After trying seasonal passwords + username-as-password variants, we got a match:
 ```bash
 # Connect (use single quotes around domain\user if needed)
 smbclient -U 'hokkaido-aerospace.com\info' //hokkaido/homes
+```
 
 <img width="793" height="550" alt="image" src="https://github.com/user-attachments/assets/e929f840-78d6-4607-b7a8-35b32ec2e680" />
 
@@ -664,6 +665,7 @@ xfreerdp3 /u:molly.smith /p:'Pass@123' /drive:/tmp /dynamic-resolution /v:hokkai
 
 
 <img width="1919" height="971" alt="image" src="https://github.com/user-attachments/assets/f51ff8c3-bab2-4e78-95d1-80021ac7d5bb" />
+
 
 
 
