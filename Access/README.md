@@ -172,3 +172,6 @@ Click on our uploaded shell and notice that the browser hangs and will not resol
 
 lab doesnt work will do it later
 
+
+https://medium.com/@Dpsypher/proving-grounds-practice-access-b95d3146cfe9
+https://medium.com/@siberfaqih/offsec-proving-grounds-access-a-complete-writeup-walkthrough-12ad7f6bad6f
