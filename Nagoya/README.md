@@ -336,3 +336,5 @@ Target SPN service account
 ```bash
 Get-ADUser -Filter {SamAccountName -eq "svc_mssql"} -Properties ServicePrincipalNames
 ```
+
+
