@@ -388,10 +388,16 @@ sudo ./proxy -selfcertt
 ```
 <img width="1072" height="334" alt="image" src="https://github.com/user-attachments/assets/75ed26d7-e5a9-4f50-befd-04f33797fa57" />
 
+im lab was lagging so i restart the lab and got the new target ip: 192.168.52.21
+
+<img width="778" height="266" alt="image" src="https://github.com/user-attachments/assets/e25a8f80-2597-4da7-a2bf-9ea51a3769c4" />
+
+
 🛠 Step 3: Run the Ligolo relay (agent) on the target machine:
 
 First, upload the Ligolo-ng agent binary (compiled for Windows) to the target (e.g., via evil-winrm upload), then run it:
 
 ```bash
-/agent.exe -connect 192.168.55.21:11601 -ignore-cert
+/agent.exe -connect 192.168.52.21:11601 -ignore-cert
 ```
+
