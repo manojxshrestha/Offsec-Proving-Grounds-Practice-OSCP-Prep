@@ -1,6 +1,6 @@
 lab  Hepet
 
-target 192.168.59.140
+target 192.168.52.140
 
 ```bash
 sudo nmap -sC -sV hepet -sT -vvv -p- -Pn -T5 --min-rate=5000
@@ -105,3 +105,61 @@ This is the same info nmap gave us. After checking hacktricks  https://book.hack
 
 443/TCP - HTTPS
 
+<img width="931" height="21" alt="image" src="https://github.com/user-attachments/assets/1ffb0dac-f904-418f-bc53-203659d5c8a1" />
+
+<img width="2478" height="901" alt="image" src="https://github.com/user-attachments/assets/99883e06-85ba-4632-8ca7-8f8a75b04dcd" />
+
+We get some names from the website, we could try and brute force later with them (some of these have also been found on [[#25/TCP - SMTP]]).
+
+```bash
+ela
+charlotte
+magnus
+agnes
+jonas
+martha
+```
+
+Furthermore we also notice that jonas has SicMundusCreatusEst as his title on the website, could be a password?
+
+note: Is that a Dark reference?
+
+```bash
+python3 dirsearch.py -u http://192.168.52.140:443/ -e* --output-file dirsearch-443.txt -r
+```
+<img width="1052" height="416" alt="image" src="https://github.com/user-attachments/assets/42026a04-ecde-4152-880f-f4393c063f7a" />
+
+This didn’t really yield anything valuable
+
+
+2224/TCP - HTTP
+<img width="993" height="373" alt="image" src="https://github.com/user-attachments/assets/44ccbcdb-8399-428d-92fa-80431f60d6c1" />
+
+<img width="1007" height="784" alt="image" src="https://github.com/user-attachments/assets/a93d86ba-f513-4350-8eeb-49bd9e59c310" />
+
+<img width="669" height="26" alt="image" src="https://github.com/user-attachments/assets/e28529f1-6a10-4ad7-8e66-c61ec7d20404" />
+
+I went ahead and started looking for exploits regarding this version running:
+
+<img width="1164" height="419" alt="image" src="https://github.com/user-attachments/assets/6d1899f4-ea18-4f60-a118-f19e5fb2ddf0" />
+
+
+
+
+E-Mail Related Port Pentest
+
+After building a custom username and password wordlist, I proceeded with SMTP enumeration on port 25 using the tool smtp-user-enum.
+```bash
+smtp-user-enum -M VRFY -U users.txt -t 192.168.52.140
+```
+<img width="1017" height="583" alt="image" src="https://github.com/user-attachments/assets/3bc3ac45-2815-4151-b42f-0c2efe0882b5" />
+
+
+The enumeration results revealed 5 valid SMTP users: agnes, magnus, charlotte, martha, jonas . These were noted as valid email accounts on the mail server.
+
+Previously, I had identified potential valid credentials: jonas:SicMundusCreatusEst .
+
+Using these credentials, I attempted to access the IMAP service running on port 143. Upon accessing the mailbox, I found:
+
+    1 folder: INBOX
+    5 email messages inside
