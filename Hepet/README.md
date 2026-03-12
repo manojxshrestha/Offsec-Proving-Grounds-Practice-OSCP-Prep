@@ -143,8 +143,12 @@ I went ahead and started looking for exploits regarding this version running:
 
 <img width="1164" height="419" alt="image" src="https://github.com/user-attachments/assets/6d1899f4-ea18-4f60-a118-f19e5fb2ddf0" />
 
+This doesn’t seem the way to go, let’s hold this for now.
 
 
+143/tcp   
+
+<img width="655" height="22" alt="image" src="https://github.com/user-attachments/assets/58b42c94-6525-4d36-af7c-ffd73a9408fd" />
 
 E-Mail Related Port Pentest
 
@@ -163,3 +167,12 @@ Using these credentials, I attempted to access the IMAP service running on port 
 
     1 folder: INBOX
     5 email messages inside
+
+and then i run
+
+<img width="785" height="110" alt="image" src="https://github.com/user-attachments/assets/986329d6-782d-4e55-b838-d99cfe425d8e" />
+
+im trying to do email enumeration but it won't let me to do.. might be lab issue ..and i saw official offsec walkthrough
+
+
+
